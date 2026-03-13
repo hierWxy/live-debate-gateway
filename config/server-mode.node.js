@@ -1,19 +1,29 @@
 // config/server-mode.node.js (Node.js后端专用)
-const USE_MOCK_SERVER = false; // 改为 false 使用真实服务器
+// 部署时自动使用 mock 模式，不需要代理到其他服务
+
+// 使用环境变量控制，本地开发可以设为 false，Railway 部署时自动使用 mock
+const USE_MOCK_SERVER = process.env.USE_MOCK_SERVER !== 'false';
+
 const LOCAL_SERVER_URL = 'http://localhost:8082';
-const REAL_SERVER_URL = 'http://localhost:8082'; // 网关自身地址
-const REAL_SERVER_PORT = 8082; // 网关监听端口
-const BACKEND_SERVER_URL = 'http://localhost:8080'; // Spring Boot 后端地址（/api 代理目标）
+const REAL_SERVER_URL = 'http://localhost:8082';
+const REAL_SERVER_PORT = 8082;
+
+// Railway 部署时不代理到其他服务，设置为 null
+const BACKEND_SERVER_URL = process.env.BACKEND_SERVER_URL || null;
+
 const REAL_WECHAT_CONFIG = {
     appid: 'wx94289b0d2ca7a802',
     secret: '10409c1193a326a7b328f675b1776195'
 };
+
 const getLocalIP = () => '192.168.31.189';
+
 const MOCK_SERVER_CONFIG = {
     host: getLocalIP(),
     port: 8082,
     url: `http://${getLocalIP()}:8082`
 };
+
 const getCurrentServerConfig = () => {
     if (USE_MOCK_SERVER) {
         return {
@@ -28,11 +38,10 @@ const getCurrentServerConfig = () => {
             }
         };
     } else {
-        // 使用真实服务器，直接连接中间层
         return {
             mode: 'real',
             url: REAL_SERVER_URL,
-            port: REAL_SERVER_PORT,  // 使用8080端口，与前端配置保持一致
+            port: REAL_SERVER_PORT,
             wechat: {
                 useMock: false,
                 appid: REAL_WECHAT_CONFIG.appid,
@@ -41,6 +50,7 @@ const getCurrentServerConfig = () => {
         };
     }
 };
+
 const printConfig = () => {
     const config = getCurrentServerConfig();
     console.log('═══════════════════════════════════════');
@@ -59,6 +69,7 @@ const printConfig = () => {
     }
     console.log('═══════════════════════════════════════');
 };
+
 module.exports = {
     USE_MOCK_SERVER,
     MOCK_SERVER_CONFIG,

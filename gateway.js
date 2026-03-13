@@ -168,8 +168,13 @@ app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: true
 }));
+
+// 默认路由 - 访问根路径重定向到管理后台
+app.get('/', (req, res) => {
+    res.redirect('/admin');
+});
+
 app.use(express.json());
 
 // ==================== 后台管理路由（必须在代理之前） ====================
