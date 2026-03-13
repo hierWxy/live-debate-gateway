@@ -1,14 +1,12 @@
 // config/server-mode.node.js (Node.js后端专用)
 // 部署时自动使用 mock 模式，不需要代理到其他服务
 
-// 使用环境变量控制，本地开发可以设为 false，Railway 部署时自动使用 mock
 const USE_MOCK_SERVER = process.env.USE_MOCK_SERVER !== 'false';
 
 const LOCAL_SERVER_URL = 'http://localhost:8082';
 const REAL_SERVER_URL = 'http://localhost:8082';
 const REAL_SERVER_PORT = 8082;
 
-// Railway 部署时不代理到其他服务，设置为 null
 const BACKEND_SERVER_URL = process.env.BACKEND_SERVER_URL || null;
 
 const REAL_WECHAT_CONFIG = {
@@ -16,12 +14,32 @@ const REAL_WECHAT_CONFIG = {
     secret: '10409c1193a326a7b328f675b1776195'
 };
 
-const getLocalIP = () => '192.168.31.189';
+// 自动获取服务器 IP
+const getLocalIP = () => {
+    // Railway 部署时使用 0.0.0.0
+    if (process.env.RAILWAY_STATIC_URL || process.env.RAILWAY_PROJECT_NAME) {
+        return '0.0.0.0';
+    }
+    
+    // 本地开发时尝试自动获取
+    const os = require('os');
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return 'localhost';
+};
 
 const MOCK_SERVER_CONFIG = {
     host: getLocalIP(),
     port: 8082,
-    url: `http://${getLocalIP()}:8082`
+    url: process.env.RAILWAY_STATIC_URL 
+        ? `https://${process.env.RAILWAY_STATIC_URL}`
+        : `http://${getLocalIP()}:8082`
 };
 
 const getCurrentServerConfig = () => {
