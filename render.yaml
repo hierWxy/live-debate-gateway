@@ -1,0 +1,10 @@
+{
+  "name": "live-debate-gateway",
+  "buildCommand": "npm install",
+  "startCommand": "node gateway.js",
+  "env": {
+    "NODE_VERSION": {
+      "value": "18"
+    }
+  }
+}
