@@ -1,22 +1,29 @@
 // 后台管理系统主逻辑
 // 服务器配置
 const SERVER_CONFIG = {
+	// 自动获取当前域名
+	get CURRENT_URL() {
+		if (typeof window !== 'undefined' && window.location) {
+			return window.location.origin;
+		}
+		return 'http://localhost:8082';
+	},
 	// 本地开发时使用（网关地址）
 	LOCAL_URL: 'http://localhost:8082',
 	// 中间层服务器地址（已废弃，不再使用）
 	MIDDLEWARE_URL: 'http://192.168.31.249:8081',
 	// 后端服务器地址（真实服务器，直接访问）
 	BACKEND_URL: 'http://192.140.160.119:8000',
-	// 网关地址（本地开发使用）
-	GATEWAY_URL: 'http://localhost:8082',
-	// 当前使用的地址（修改这里切换服务器）
+	// 网关地址
+	get GATEWAY_URL() {
+		return this.CURRENT_URL;
+	},
+	// 当前使用的地址
 	get BASE_URL() {
-		// 🔧 配置：使用本地网关服务器（代理到后端）
-		return this.GATEWAY_URL; // 使用本地网关
+		return this.GATEWAY_URL;
 	},
 	get WEB_SOCKET_URL() {
-		// 🔧 配置：WebSocket 连接到本地网关
-		return this.GATEWAY_URL; // 使用本地网关
+		return this.GATEWAY_URL;
 	}
 };
 

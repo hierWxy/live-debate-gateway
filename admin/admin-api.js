@@ -7,6 +7,10 @@ const getAPIBase = () => {
 	if (window.SERVER_CONFIG && window.SERVER_CONFIG.BASE_URL) {
 		return window.SERVER_CONFIG.BASE_URL;
 	}
+	// 自动检测当前域名
+	if (typeof window !== 'undefined' && window.location) {
+		return window.location.origin;
+	}
 	// 默认使用本地网关服务器
 	return 'http://localhost:8082';
 };

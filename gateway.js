@@ -4074,7 +4074,8 @@ server.listen(port, '0.0.0.0', () => {
 });
 
 // ==================== 后端代理（放在所有路由之后，作为fallback） ====================
-if (BACKEND_SERVER_URL) {
+// 只有当 BACKEND_SERVER_URL 是有效的 URL 时才启用代理
+if (BACKEND_SERVER_URL && BACKEND_SERVER_URL.startsWith('http')) {
     app.use('/api', (req, res, next) => {
         // 排除管理API路由（这些路由已在本地定义）
         if (req.path.startsWith('/admin') || 
@@ -4113,6 +4114,8 @@ if (BACKEND_SERVER_URL) {
         })(req, res, next);
     });
     console.log('✅ /api 代理已启用 -> ' + BACKEND_SERVER_URL);
+} else {
+    console.log('✅ 本地 Mock 模式运行，无后端代理');
 }
 
 // ==================== 404处理器（必须在所有路由之后） ====================
